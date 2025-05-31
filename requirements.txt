@@ -1,0 +1,8 @@
+gspread
+oauth2client
+google-api-python-client
+python-telegram-bot
+python-dateutil
+pytz
+python-dotenv
+google-api-python-client
