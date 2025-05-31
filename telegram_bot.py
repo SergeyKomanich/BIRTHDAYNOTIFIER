@@ -7,6 +7,7 @@ from config import TELEGRAM_TOKEN
 from subscribers_logger import log_subscriber
 from google_sheets import get_birthdays_from_sheet
 from birthday_utils import filter_this_month
+from subscribers_logger import log_subscriber_to_csv
 
 # Ініціалізуємо бота з токеном із .env
 bot = Bot(token=TELEGRAM_TOKEN)
@@ -35,6 +36,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         chat_ids.append(chat_id)
         save_chat_ids(chat_ids)
         log_subscriber(chat_id, update.effective_user.username)
+        log_subscriber_to_csv(chat_id, update.effective_user.username)
 
     await update.message.reply_text("👋 Привіт! Я бот-нагадувач про дні народження.\nНатисни /list, щоб побачити іменинників цього місяця.")
 
