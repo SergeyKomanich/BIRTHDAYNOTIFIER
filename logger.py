@@ -1,33 +1,40 @@
-import json
+import csv
 import os
+import logging
 from datetime import datetime
 
-LOG_FILE = 'birthday_log.json'
+# CSV-файл для логування іменинників
+LOG_FILE = 'log.csv'
 
-def load_logs():
-    if os.path.exists(LOG_FILE):
-        with open(LOG_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return []
+# Створення каталогу logs для централізованих логів
+if not os.path.exists('logs'):
+    os.makedirs('logs')
 
-def log_birthdays(persons, action):
-    logs = load_logs()
-    now = datetime.now().isoformat(timespec='seconds')
+# Налаштування logging
+logging.basicConfig(
+    filename='logs/birthday_notifier.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
-    for p in persons:
-        logs.append({
-            'name': p['name'],
-            'date': p['date'].isoformat(),
-            'action': action,
-            'timestamp': now
-        })
+# Централізоване логування
+def log_event(message: str):
+    logging.info(message)
 
-    with open(LOG_FILE, 'w', encoding='utf-8') as f:
-        json.dump(logs, f, ensure_ascii=False, indent=2)
-
-def was_logged(name, date, action):
-    logs = load_logs()
-    for log in logs:
-        if log['name'] == name and log['date'] == date.isoformat() and log['action'] == action:
-            return True
+# Перевірка, чи вже логувався цей запис
+def was_logged(name, date, target):
+    if not os.path.exists(LOG_FILE):
+        return False
+    with open(LOG_FILE, mode='r') as f:
+        for row in csv.reader(f):
+            if row == [name, str(date), target]:
+                return True
     return False
+
+# Додає новий запис до логів у CSV
+def log_birthdays(birthdays, target):
+    with open(LOG_FILE, mode='a', newline='') as f:
+        writer = csv.writer(f)
+        for person in birthdays:
+            writer.writerow([person['name'], person['date'], target])
+            log_event(f'Logged {person["name"]} ({person["date"]}) for {target}')

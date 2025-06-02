@@ -2,6 +2,12 @@
 from telegram.ext import ApplicationBuilder, CommandHandler
 from telegram_bot import start, list_birthdays
 from config import TELEGRAM_TOKEN
+from telegram_bot import start, list_birthdays, all_birthdays  # додано all_birthdays
+from telegram_bot import handle_message
+from telegram_bot import all_birthdays, handle_message
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+
+
 
 # Ініціалізуємо Telegram-застосунок
 app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
@@ -9,6 +15,9 @@ app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 # Додаємо обробники команд
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("list", list_birthdays))
+app.add_handler(CommandHandler("alllist", all_birthdays))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+app.add_handler(CommandHandler("alllist", all_birthdays))
 
 # Запускаємо бота в режимі слухача
 if __name__ == '__main__':
